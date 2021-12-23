@@ -26,7 +26,12 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         backgroundColor: Colors.cyan,
-        title: const Text('Enter Matrix'),
+        title: const Text(
+          'Enter Matrix',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
       body: Obx(
         () => Column(
@@ -35,7 +40,7 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
             row('Column Size', vamController.colDropdownValue),
             row('Row Size', vamController.rowDropdownValue),
             matrixWidget,
-            askArz('Supply  '),
+            askSupply('Supply  '),
             askDemand('Demand'),
             const Spacer(),
           ],
@@ -47,10 +52,10 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
   Widget askDemand(title) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: SizedBox(
           height: 50,
-          width: Get.width - 32,
+          width: Get.width - 16,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -66,13 +71,13 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: SizedBox(
                           height: 50,
-                          width: (Get.width - 100) /
+                          width: (Get.width - 80) /
                               vamController.colDropdownValue.value,
                           child: Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
+                                const EdgeInsets.symmetric(horizontal: 6.0),
                             child: TextField(
-                              maxLength: 1,
+                              maxLength: 2,
                               textAlign: TextAlign.center,
                               textAlignVertical: TextAlignVertical.top,
                               keyboardType: TextInputType.number,
@@ -80,6 +85,9 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
                                 if (!value.isNum) {
                                   Get.snackbar(
                                       'Error', 'You must enter numbers!');
+                                } else {
+                                  vamController.tmpDemand[index] =
+                                      int.parse(value);
                                 }
                               },
                               decoration: const InputDecoration(
@@ -103,7 +111,7 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
     );
   }
 
-  Widget askArz(title) {
+  Widget askSupply(title) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -129,9 +137,9 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
                               vamController.rowDropdownValue.value,
                           child: Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
+                                const EdgeInsets.symmetric(horizontal: 10.0),
                             child: TextField(
-                              maxLength: 1,
+                              maxLength: 2,
                               textAlign: TextAlign.center,
                               textAlignVertical: TextAlignVertical.top,
                               keyboardType: TextInputType.number,
@@ -139,6 +147,9 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
                                 if (!value.isNum) {
                                   Get.snackbar(
                                       'Error', 'You must enter numbers!');
+                                } else {
+                                  vamController.tmpSupply[index] =
+                                      int.parse(value);
                                 }
                               },
                               decoration: const InputDecoration(
@@ -168,7 +179,7 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
         child: ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           itemCount: vamController.rowDropdownValue.value,
-          itemBuilder: (context, index) {
+          itemBuilder: (context, x) {
             return SizedBox(
               height: 50,
               width: Get.width,
@@ -176,22 +187,24 @@ class _EnterNumbersPage extends State<EnterNumbersPage> {
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: vamController.colDropdownValue.value,
-                itemBuilder: (context, index) {
+                itemBuilder: (context, y) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: SizedBox(
                       height: 50,
                       width: Get.width / vamController.colDropdownValue.value,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: TextField(
-                          maxLength: 1,
+                          maxLength: 2,
                           textAlign: TextAlign.center,
                           textAlignVertical: TextAlignVertical.top,
                           keyboardType: TextInputType.number,
                           onChanged: (value) {
                             if (!value.isNum) {
                               Get.snackbar('Error', 'You must enter numbers!');
+                            } else {
+                              vamController.tmpCosts[x][y] = int.parse(value);
                             }
                           },
                           decoration: const InputDecoration(

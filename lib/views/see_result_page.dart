@@ -24,7 +24,12 @@ class SeeResultPage extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       appBar: AppBar(
         backgroundColor: Colors.cyan,
-        title: const Text('See Result'),
+        title: const Text(
+          'See Result',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
       body: Obx(
         () => vamController.calculateLoading.value
@@ -57,7 +62,7 @@ class SeeResultPage extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      vamController.total_cost.toString(),
+                      vamController.totalCost.toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,

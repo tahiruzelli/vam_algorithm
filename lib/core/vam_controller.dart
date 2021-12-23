@@ -9,12 +9,13 @@ class VamController extends GetxController {
   int totalCost = 0;
   int intMax = 2147483647;
   int intMin = -2147483648;
-  List<int> supply = [100, 10, 50, 50];
+  List<int> supply = [100, 10, 50, 50, 10];
   List<int> demand = [30, 20, 70, 30, 60];
   List costs = [
     [16, 16, 13, 22, 17],
     [14, 14, 13, 19, 15],
     [19, 19, 20, 23, 50],
+    [50, 12, 50, 15, 11],
     [50, 12, 50, 15, 11],
   ];
   List tmpCosts = [
@@ -22,9 +23,10 @@ class VamController extends GetxController {
     [14, 14, 13, 19, 15],
     [19, 19, 20, 23, 50],
     [50, 12, 50, 15, 11],
+    [50, 12, 50, 15, 11],
   ];
-  List<int> tmpSupply = [20, 40, 10, 70];
-  List<int> tmpDemand = [10, 50, 30, 30, 20];
+  List<int> tmpSupply = [100, 10, 50, 50, 10];
+  List<int> tmpDemand = [30, 20, 70, 30, 60];
   List<bool> rowDone;
   List<bool> colDone;
   void diff(int j, int len, bool isRow, List res) {
@@ -68,7 +70,7 @@ class VamController extends GetxController {
       res[1] = pm;
     }
     res[2] = mc;
-    res[3] = md;
+    res.last = md;
   }
 
   void nextCell(List res) {
@@ -78,24 +80,24 @@ class VamController extends GetxController {
     maxPenalty(rowDropdownValue.value, colDropdownValue.value, true, res1);
     maxPenalty(colDropdownValue.value, rowDropdownValue.value, false, res2);
 
-    if (res1[3] == res2[3]) {
+    if (res1.last == res2.last) {
       if (res1[2] < res2[2]) {
-        for (i = 0; i < 4; ++i) {
+        for (i = 0; i < rowDropdownValue.value; ++i) {
           res[i] = res1[i];
         }
       } else {
-        for (i = 0; i < 4; ++i) {
+        for (i = 0; i < rowDropdownValue.value; ++i) {
           res[i] = res2[i];
         }
       }
       return;
     }
-    if (res1[3] > res2[3]) {
-      for (i = 0; i < 4; ++i) {
+    if (res1.last > res2.last) {
+      for (i = 0; i < rowDropdownValue.value; ++i) {
         res[i] = res2[i];
       }
     } else {
-      for (i = 0; i < 4; ++i) {
+      for (i = 0; i < rowDropdownValue.value; ++i) {
         res[i] = res1[i];
       }
     }
@@ -172,7 +174,7 @@ class VamController extends GetxController {
     } else {
       Get.off(SeeResultPage());
       calculateLoading.value = true;
-
+      editMatrix();
       calculate();
       Future.delayed(const Duration(seconds: 2)).then((value) {
         calculateLoading.value = false;
@@ -181,10 +183,43 @@ class VamController extends GetxController {
   }
 
   void onNewCalculateButtonPressed() {
+    refreshVars();
     Get.off(EnterNumbersPage());
   }
 
-  void fillMatrix() {}
+  void editMatrix() {
+    int tmpOldColValue;
+    int tmpOldRowValue;
+    if (tmpCosts.length != rowDropdownValue.value) {
+      tmpOldRowValue = tmpCosts.length;
+      for (int i = 0; i < tmpOldRowValue - rowDropdownValue.value; i++) {
+        tmpCosts.removeAt(tmpCosts.length - 1);
+        tmpSupply.removeAt(tmpSupply.length - 1);
+        tmpDemand.removeAt(tmpDemand.length - 1);
+      }
+    }
+    if (tmpCosts.first.length != colDropdownValue.value) {
+      tmpOldColValue = tmpCosts.first.length;
+      for (int i = 0; i < tmpCosts.length; i++) {
+        for (int j = 0; j < tmpOldColValue - colDropdownValue.value; j++) {
+          tmpCosts[i].removeAt(tmpCosts[i].length - 1);
+        }
+      }
+    }
+    print(tmpCosts);
+  }
+
+  void refreshVars() {
+    tmpCosts = [
+      [16, 16, 13, 22, 17],
+      [14, 14, 13, 19, 15],
+      [19, 19, 20, 23, 50],
+      [50, 12, 50, 15, 11],
+      [50, 12, 50, 15, 11],
+    ];
+    tmpSupply = [100, 10, 50, 50, 10];
+    tmpDemand = [30, 20, 70, 30, 60];
+  }
 
   @override
   void onInit() {

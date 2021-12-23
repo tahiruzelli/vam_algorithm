@@ -1,185 +1,134 @@
 import 'package:flutter/material.dart';
 
-Map findBiggestNum(List list, bool isX) {
-  Map tmp = {
-    'point': 0,
-    'x': 0,
-    'y': 0,
-    'isX': isX,
-  };
-  for (int i = 0; i < list.length; i++) {
-    if (list[i]['point'] > tmp['point']) {
-      tmp['point'] = list[i]['point'];
-      if (isX) {
-        tmp['y'] = i;
-      } else {
-        tmp['x'] = i;
+int NRows = 4;
+int NCols = 5;
+int intMax = 2147483647;
+int intMin = -2147483648;
+List<int> supply = [50, 60, 50, 50];
+List<int> demand = [30, 20, 70, 30, 60];
+List costs = [
+  [16, 16, 13, 22, 17],
+  [14, 14, 13, 19, 15],
+  [19, 19, 20, 23, 50],
+  [50, 12, 50, 15, 11],
+];
+List<bool> rowDone = List.filled(NRows, false);
+List<bool> colDone = List.filled(NCols, false);
+
+void diff(int j, int len, bool isRow, List res) {
+  int i, c, min1 = intMax, min2 = min1, minP = -1;
+  for (i = 0; i < len; ++i) {
+    if ((isRow) ? colDone[i] : rowDone[i]) continue;
+    c = (isRow) ? costs[j][i] : costs[i][j];
+    if (c < min1) {
+      min2 = min1;
+      min1 = c;
+      minP = i;
+    } else if (c < min2) {
+      min2 = c;
+    }
+  }
+  res[0] = min2 - min1;
+  res[1] = min1;
+  res[2] = minP;
+}
+
+void max_penalty(int len1, int len2, bool is_row, List res) {
+  int i, pc = -1, pm = -1, mc = -1, md = intMin;
+  List res2 = List<int>(3);
+
+  for (i = 0; i < len1; ++i) {
+    if ((is_row) ? rowDone[i] : colDone[i]) continue;
+    diff(i, len2, is_row, res2);
+    if (res2[0] > md) {
+      md = res2[0]; /* max diff */
+      pm = i; /* pos of max diff */
+      mc = res2[1]; /* min cost */
+      pc = res2[2]; /* pos of min cost */
+    }
+  }
+
+  if (is_row) {
+    res[0] = pm;
+    res[1] = pc;
+  } else {
+    res[0] = pc;
+    res[1] = pm;
+  }
+  res[2] = mc;
+  res[3] = md;
+}
+
+void next_cell(List res) {
+  int i;
+  List res1 = List<int>(NRows);
+  List res2 = List<int>(NRows);
+  max_penalty(NRows, NCols, true, res1);
+  max_penalty(NCols, NRows, false, res2);
+
+  if (res1[3] == res2[3]) {
+    if (res1[2] < res2[2]) {
+      for (i = 0; i < 4; ++i) {
+        res[i] = res1[i];
+      }
+    } else {
+      for (i = 0; i < 4; ++i) {
+        res[i] = res2[i];
       }
     }
+    return;
   }
-  return tmp;
-}
-
-Map findSmallestNum(List list) {
-  Map tmp = {'point': 0};
-  for (int i = 0; i < list.length; i++) {
-    if (list[i]['point'] < tmp['point']) {
-      tmp = list[i];
-    }
-  }
-  return tmp;
-}
-
-Map findSecondSmallestNum(List list) {
-  List tmpList = list;
-  tmpList.sort((a, b) => a['point'].compareTo(b['point']));
-  Map tmp = tmpList[1];
-  return tmp;
-}
-
-List<Map> matrisSatiriDoldur(int a, int b, int c, int d) {
-  List<Map> tmp = [];
-  tmp.add({
-    'point': a,
-  });
-  tmp.add({
-    'point': b,
-  });
-  tmp.add({
-    'point': c,
-  });
-  tmp.add({
-    'point': d,
-  });
-  return tmp;
-}
-
-void tumMatrisiDoldur(List<List<Map>> matrix) {
-  matrix.add(matrisSatiriDoldur(45, 17, 21, 30));
-  matrix.add(matrisSatiriDoldur(14, 18, 19, 31));
-  matrix.add(matrisSatiriDoldur(0, 0, 0, 0));
-}
-
-void matrisiYenile(List matrix) {
-  matrix[0][0] = {'point': 45};
-  matrix[0][1] = {'point': 17};
-  matrix[0][2] = {'point': 21};
-  matrix[0][3] = {'point': 30};
-
-  matrix[1][0] = {'point': 14};
-  matrix[1][1] = {'point': 18};
-  matrix[1][2] = {'point': 19};
-  matrix[1][3] = {'point': 31};
-
-  matrix[2][0] = {'point': 0};
-  matrix[2][2] = {'point': 0};
-  matrix[2][1] = {'point': 0};
-  matrix[2][3] = {'point': 0};
-}
-
-void sutunCezalariHesapla(List<List<Map>> matrix, List penaltyY) {
-  for (int i = 0; i < matrix.length; i++) {
-    Map penalty = {};
-    penalty['point'] = findSecondSmallestNum(matrix[i])['point'] -
-        findSmallestNum(matrix[i])['point'];
-    matrisiYenile(matrix);
-    penaltyY.add(penalty);
-  }
-}
-
-void satirCezalariHesapla(List<List<Map>> matrix, List penaltyX) {
-  List tmpList = [];
-  Map penalty = {};
-  for (int j = 0; j < matrix[0].length; j++) {
-    for (int i = 0; i < matrix.length; i++) {
-      tmpList.add(matrix[i][j]);
-    }
-    Map tmp = findSecondSmallestNum(tmpList);
-    Map tmp2 = findSmallestNum(tmpList);
-    penalty['point'] = tmp['point'] - tmp2['point'];
-    penaltyX.add(penalty);
-    tmpList.clear();
-  }
-}
-
-Map findBiggestPenalty(List penaltyX, List penaltyY) {
-  Map xSum;
-  Map ySum;
-  xSum = findBiggestNum(penaltyX, true);
-  ySum = findBiggestNum(penaltyY, false);
-
-  if (xSum['point'] > ySum['point']) {
-    return xSum;
-  } else if (ySum['point'] > xSum['point']) {
-    return ySum;
-  } else {
-    return ySum;
-  }
-}
-
-bool arzTalepKontrolu(List supply, List demand) {
-  int supplySum = 0;
-  int demandSum = 0;
-  for (int i = 0; i < supply.length; i++) {
-    supplySum += supply[i];
-  }
-  for (int i = 0; i < demand.length; i++) {
-    demandSum += demand[i];
-  }
-  if (supplySum == demandSum) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-Map findSmallestCell(Map penalty, List matrix) {
-  List<Map> tmpList = [];
-  if (penalty['isX']) {
-    for (int i = 0; i < matrix.length; i++) {
-      tmpList.add({
-        'point': matrix[i][penalty['y']]['point'],
-        'x': penalty['y'],
-        'y': i,
-      });
+  if (res1[3] > res2[3]) {
+    for (i = 0; i < 4; ++i) {
+      res[i] = res2[i];
     }
   } else {
-    for (int i = 0; i < matrix[penalty['x']].length; i++) {
-      tmpList.add({
-        'point': matrix[penalty['x'][i]]['point'],
-        'x': i,
-        'y': penalty['x'],
-      });
+    for (i = 0; i < 4; ++i) {
+      res[i] = res1[i];
     }
   }
-  tmpList.sort((a, b) => a['point'].compareTo(b['point']));
-  return tmpList.first;
 }
 
 void main() {
-  List<List<Map>> matrix = new List<List<Map>>();
-  List penaltyX = [];
-  List penaltyY = [];
-  List supply = [15, 13, 3];
-  List demand = [9, 6, 7, 9];
-  Map biggestPenalty;
-  Map smallestCell;
-  if (arzTalepKontrolu(supply, demand)) {
-    tumMatrisiDoldur(matrix);
-    //matris.length x
-    // matris.first.lenhth y
+  int i, j, r, c, q, supply_left = 0, total_cost = 0;
+  List cell = List<int>(4);
+  List results = [
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+  ];
 
-    sutunCezalariHesapla(matrix, penaltyY);
-    satirCezalariHesapla(matrix, penaltyX);
-
-    biggestPenalty = findBiggestPenalty(penaltyX, penaltyY);
-    smallestCell = findSmallestCell(biggestPenalty, matrix);
-
-    print(smallestCell);
-  } else {
-    print('Arz Talep birbirini tutmuyor');
+  for (i = 0; i < NRows; ++i) {
+    supply_left += supply[i];
+  }
+  while (supply_left > 0) {
+    next_cell(cell);
+    r = cell[0];
+    c = cell[1];
+    q = (demand[c] <= supply[r]) ? demand[c] : supply[r];
+    demand[c] -= q;
+    if (demand[c] == 0) {
+      colDone[c] = true;
+    }
+    supply[r] -= q;
+    if (supply[r] == 0) {
+      rowDone[r] = true;
+    }
+    results[r][c] = q;
+    supply_left -= q;
+    total_cost += q * costs[r][c];
   }
 
+  print("    A   B   C   D   E\n");
+  for (i = 0; i < NRows; ++i) {
+    print('W $i');
+    for (j = 0; j < NCols; ++j) {
+      print("  ${results[i][j]}");
+    }
+    print("\n");
+  }
+  print("\nTotal cost = $total_cost\n");
   //runApp(const MyApp());
 }
 

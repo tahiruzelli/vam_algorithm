@@ -1,11 +1,176 @@
 import 'package:flutter/material.dart';
 
+Map findBiggestNum(List list, bool isX) {
+  Map tmp = {
+    'point': 0,
+    'x': 0,
+    'y': 0,
+    'isX': isX,
+  };
+  for (int i = 0; i < list.length; i++) {
+    if (list[i] > tmp['point']) {
+      tmp['point'] = list[i];
+      if (isX) {
+        tmp['y'] = i;
+      } else {
+        tmp['x'] = i;
+      }
+    }
+  }
+  return tmp;
+}
+
+int findSmallestNum(List list) {
+  int tmp = 0;
+  for (int i = 0; i < list.length; i++) {
+    if (list[i] < tmp) {
+      tmp = list[i];
+    }
+  }
+  return tmp;
+}
+
+int findSecondSmallestNum(List list) {
+  List tmpList = list;
+  tmpList.sort();
+  return tmpList[1];
+}
+
+List<int> matrisSatiriDoldur(int a, int b, int c, int d) {
+  List<int> tmp = [];
+  tmp.add(a);
+  tmp.add(b);
+  tmp.add(c);
+  tmp.add(d);
+  return tmp;
+}
+
+void tumMatrisiDoldur(List matrix) {
+  matrix.add(matrisSatiriDoldur(45, 17, 21, 30));
+  matrix.add(matrisSatiriDoldur(14, 18, 19, 31));
+  matrix.add(matrisSatiriDoldur(0, 0, 0, 0));
+}
+
+void matrisiYenile(List matrix) {
+  matrix[0][0] = 45;
+  matrix[0][1] = 17;
+  matrix[0][2] = 21;
+  matrix[0][3] = 30;
+
+  matrix[1][0] = 14;
+  matrix[1][1] = 18;
+  matrix[1][2] = 19;
+  matrix[1][3] = 31;
+
+  matrix[2][0] = 0;
+  matrix[2][2] = 0;
+  matrix[2][1] = 0;
+  matrix[2][3] = 0;
+}
+
+void sutunCezalariHesapla(List matrix, List penaltyY) {
+  for (int i = 0; i < matrix.length; i++) {
+    int penalty;
+    penalty = findSecondSmallestNum(matrix[i]) - findSmallestNum(matrix[i]);
+    matrisiYenile(matrix);
+    penaltyY.add(penalty);
+  }
+}
+
+void satirCezalariHesapla(List matrix, List penaltyX) {
+  List tmpList = [];
+  int penalty;
+  for (int j = 0; j < matrix[0].length; j++) {
+    for (int i = 0; i < matrix.length; i++) {
+      tmpList.add(matrix[i][j]);
+    }
+    penalty = findSecondSmallestNum(tmpList) - findSmallestNum(tmpList);
+    penaltyX.add(penalty);
+    tmpList.clear();
+  }
+}
+
+Map findBiggestPenalty(List penaltyX, List penaltyY) {
+  Map xSum;
+  Map ySum;
+  xSum = findBiggestNum(penaltyX, true);
+  ySum = findBiggestNum(penaltyY, false);
+
+  if (xSum['point'] > ySum['point']) {
+    return xSum;
+  } else if (ySum['point'] > xSum['point']) {
+    return ySum;
+  } else {
+    return ySum;
+  }
+}
+
+bool arzTalepKontrolu(List supply, List demand) {
+  int supplySum = 0;
+  int demandSum = 0;
+  for (int i = 0; i < supply.length; i++) {
+    supplySum += supply[i];
+  }
+  for (int i = 0; i < demand.length; i++) {
+    demandSum += demand[i];
+  }
+  if (supplySum == demandSum) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+Map findSmallestCell(Map penalty, List matrix) {
+  List<Map> tmpList = [];
+  if (penalty['isX']) {
+    for (int i = 0; i < matrix.length; i++) {
+      tmpList.add({
+        'point': matrix[i][penalty['y']],
+        'x': penalty['y'],
+        'y': i,
+      });
+    }
+  } else {
+    for (int i = 0; i < matrix[penalty['x']].length; i++) {
+      tmpList.add({
+        'point': matrix[penalty['x'][i]],
+        'x': i,
+        'y': penalty['x'],
+      });
+    }
+  }
+  tmpList.sort((a, b) => a['point'].compareTo(b['point']));
+  return tmpList.first;
+}
+
 void main() {
-  runApp(const MyApp());
+  List<List<int>> matrix = new List<List<int>>();
+  List penaltyX = [];
+  List penaltyY = [];
+  List supply = [15, 13, 3];
+  List demand = [9, 6, 7, 9];
+  Map biggestPenalty;
+  Map smallestCell;
+  if (arzTalepKontrolu(supply, demand)) {
+    tumMatrisiDoldur(matrix);
+    //matris.length x
+    // matris.first.lenhth y
+
+    sutunCezalariHesapla(matrix, penaltyY);
+    satirCezalariHesapla(matrix, penaltyX);
+
+    biggestPenalty = findBiggestPenalty(penaltyX, penaltyY);
+    smallestCell = findSmallestCell(biggestPenalty, matrix);
+  } else {
+    print('Arz Talep birbirini tutmuyor');
+  }
+
+  //runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -30,7 +195,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect

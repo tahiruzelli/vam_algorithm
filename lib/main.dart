@@ -8,8 +8,8 @@ Map findBiggestNum(List list, bool isX) {
     'isX': isX,
   };
   for (int i = 0; i < list.length; i++) {
-    if (list[i] > tmp['point']) {
-      tmp['point'] = list[i];
+    if (list[i]['point'] > tmp['point']) {
+      tmp['point'] = list[i]['point'];
       if (isX) {
         tmp['y'] = i;
       } else {
@@ -20,71 +20,83 @@ Map findBiggestNum(List list, bool isX) {
   return tmp;
 }
 
-int findSmallestNum(List list) {
-  int tmp = 0;
+Map findSmallestNum(List list) {
+  Map tmp = {'point': 0};
   for (int i = 0; i < list.length; i++) {
-    if (list[i] < tmp) {
+    if (list[i]['point'] < tmp['point']) {
       tmp = list[i];
     }
   }
   return tmp;
 }
 
-int findSecondSmallestNum(List list) {
+Map findSecondSmallestNum(List list) {
   List tmpList = list;
-  tmpList.sort();
-  return tmpList[1];
-}
-
-List<int> matrisSatiriDoldur(int a, int b, int c, int d) {
-  List<int> tmp = [];
-  tmp.add(a);
-  tmp.add(b);
-  tmp.add(c);
-  tmp.add(d);
+  tmpList.sort((a, b) => a['point'].compareTo(b['point']));
+  Map tmp = tmpList[1];
   return tmp;
 }
 
-void tumMatrisiDoldur(List matrix) {
+List<Map> matrisSatiriDoldur(int a, int b, int c, int d) {
+  List<Map> tmp = [];
+  tmp.add({
+    'point': a,
+  });
+  tmp.add({
+    'point': b,
+  });
+  tmp.add({
+    'point': c,
+  });
+  tmp.add({
+    'point': d,
+  });
+  return tmp;
+}
+
+void tumMatrisiDoldur(List<List<Map>> matrix) {
   matrix.add(matrisSatiriDoldur(45, 17, 21, 30));
   matrix.add(matrisSatiriDoldur(14, 18, 19, 31));
   matrix.add(matrisSatiriDoldur(0, 0, 0, 0));
 }
 
 void matrisiYenile(List matrix) {
-  matrix[0][0] = 45;
-  matrix[0][1] = 17;
-  matrix[0][2] = 21;
-  matrix[0][3] = 30;
+  matrix[0][0] = {'point': 45};
+  matrix[0][1] = {'point': 17};
+  matrix[0][2] = {'point': 21};
+  matrix[0][3] = {'point': 30};
 
-  matrix[1][0] = 14;
-  matrix[1][1] = 18;
-  matrix[1][2] = 19;
-  matrix[1][3] = 31;
+  matrix[1][0] = {'point': 14};
+  matrix[1][1] = {'point': 18};
+  matrix[1][2] = {'point': 19};
+  matrix[1][3] = {'point': 31};
 
-  matrix[2][0] = 0;
-  matrix[2][2] = 0;
-  matrix[2][1] = 0;
-  matrix[2][3] = 0;
+  matrix[2][0] = {'point': 0};
+  matrix[2][2] = {'point': 0};
+  matrix[2][1] = {'point': 0};
+  matrix[2][3] = {'point': 0};
 }
 
-void sutunCezalariHesapla(List matrix, List penaltyY) {
+void sutunCezalariHesapla(List<List<Map>> matrix, List penaltyY) {
   for (int i = 0; i < matrix.length; i++) {
-    int penalty;
-    penalty = findSecondSmallestNum(matrix[i]) - findSmallestNum(matrix[i]);
+    Map penalty = {};
+    penalty['point'] = findSecondSmallestNum(matrix[i])['point'] -
+        findSmallestNum(matrix[i])['point'];
     matrisiYenile(matrix);
     penaltyY.add(penalty);
   }
 }
 
-void satirCezalariHesapla(List matrix, List penaltyX) {
+void satirCezalariHesapla(List<List<Map>> matrix, List penaltyX) {
   List tmpList = [];
-  int penalty;
+  Map penalty = {};
   for (int j = 0; j < matrix[0].length; j++) {
     for (int i = 0; i < matrix.length; i++) {
       tmpList.add(matrix[i][j]);
     }
-    penalty = findSecondSmallestNum(tmpList) - findSmallestNum(tmpList);
+    Map tmp = findSecondSmallestNum(tmpList);
+    Map tmp2 = findSmallestNum(tmpList);
+    penalty['point'] = tmp['point'] - tmp2['point'];
     penaltyX.add(penalty);
     tmpList.clear();
   }
@@ -126,7 +138,7 @@ Map findSmallestCell(Map penalty, List matrix) {
   if (penalty['isX']) {
     for (int i = 0; i < matrix.length; i++) {
       tmpList.add({
-        'point': matrix[i][penalty['y']],
+        'point': matrix[i][penalty['y']]['point'],
         'x': penalty['y'],
         'y': i,
       });
@@ -134,7 +146,7 @@ Map findSmallestCell(Map penalty, List matrix) {
   } else {
     for (int i = 0; i < matrix[penalty['x']].length; i++) {
       tmpList.add({
-        'point': matrix[penalty['x'][i]],
+        'point': matrix[penalty['x'][i]]['point'],
         'x': i,
         'y': penalty['x'],
       });
@@ -145,7 +157,7 @@ Map findSmallestCell(Map penalty, List matrix) {
 }
 
 void main() {
-  List<List<int>> matrix = new List<List<int>>();
+  List<List<Map>> matrix = new List<List<Map>>();
   List penaltyX = [];
   List penaltyY = [];
   List supply = [15, 13, 3];
@@ -162,6 +174,8 @@ void main() {
 
     biggestPenalty = findBiggestPenalty(penaltyX, penaltyY);
     smallestCell = findSmallestCell(biggestPenalty, matrix);
+
+    print(smallestCell);
   } else {
     print('Arz Talep birbirini tutmuyor');
   }

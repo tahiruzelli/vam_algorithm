@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:vam_algorithm/views/enter_numbers_page.dart';
+import 'package:vam_algorithm/views/enter_matrix_page.dart';
 
 void main() {
   runApp(const MyApp());

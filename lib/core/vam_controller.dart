@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:vam_algorithm/views/enter_numbers_page.dart';
+import 'package:vam_algorithm/views/enter_matrix_page.dart';
 import 'package:vam_algorithm/views/see_result_page.dart';
 
 class VamController extends GetxController {
@@ -116,7 +116,7 @@ class VamController extends GetxController {
       List<int> list = new List<int>();
 
       for (var j = 0; j < colDropdownValue.value; j++) {
-        list.add(j);
+        list.add(0);
       }
 
       results.add(list);
@@ -188,6 +188,7 @@ class VamController extends GetxController {
   }
 
   void editMatrix() {
+    totalCost = 0;
     int tmpOldColValue;
     int tmpOldRowValue;
     if (tmpCosts.length != rowDropdownValue.value) {
@@ -195,10 +196,10 @@ class VamController extends GetxController {
       for (int i = 0; i < tmpOldRowValue - rowDropdownValue.value; i++) {
         tmpCosts.removeAt(tmpCosts.length - 1);
         tmpSupply.removeAt(tmpSupply.length - 1);
-        tmpDemand.removeAt(tmpDemand.length - 1);
       }
     }
     if (tmpCosts.first.length != colDropdownValue.value) {
+      tmpDemand.removeAt(tmpDemand.length - 1);
       tmpOldColValue = tmpCosts.first.length;
       for (int i = 0; i < tmpCosts.length; i++) {
         for (int j = 0; j < tmpOldColValue - colDropdownValue.value; j++) {
@@ -206,7 +207,6 @@ class VamController extends GetxController {
         }
       }
     }
-    print(tmpCosts);
   }
 
   void refreshVars() {

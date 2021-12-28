@@ -50,22 +50,34 @@ class SeeResultPage extends StatelessWidget {
                 ),
               )
             : Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Stack(
                   children: [
-                    const Text(
-                      'Result:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                    Center(
+                      child: Opacity(
+                        opacity: 0.3,
+                        child: Image.asset('assets/icons/successIcon.jpeg'),
                       ),
                     ),
-                    Text(
-                      vamController.totalCost.toString(),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Result:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            vamController.totalCost.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
